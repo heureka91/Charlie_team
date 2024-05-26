@@ -6,12 +6,15 @@ import LoginForm from '../components/auth/LoginForm';
 import Profile from './pages/Profile';
 import UpdateUserForm from '../components/auth/UpdateUserForm';
 import ChangePasswordForm from '../components/auth/ChangePasswordForm';
+import ForumPage from './pages/ForumPage';
+import ForumCommentsPage from './pages/ForumCommentsPage';
 
 
 const App: React.FC = () => (
     <ChakraProvider>
         <Router>
-            <Routes>
+                <Route path="/forum" element={<ForumPage />} />
+                <Route path="/forum/:forumId/comments" element={<ForumCommentsPage />} />
                 <Route path="/register" element={<RegistrationForm />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/profile" element={<Profile />} />
