@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Box, Select, Input, Button, Flex, FormLabel, useDisclosure, useToast } from "@chakra-ui/react";
-import { useNavigate } from 'react-router-dom';
-import ForumList from "../../components/forum/ForumList"; // Helyes import
+import { Box, Select, Input, Button, Flex, FormLabel, useDisclosure, useToast, Text, Spinner } from "@chakra-ui/react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import ForumList from "../../components/forum/ForumList";
 import { CreateForumModal } from "../../components/forum/CreateForumModal";
 import EditForumModal from "../../components/forum/EditForumModal";
 import DeleteConfirmation from "../../components/forum/DeleteConfirmation";
 import { Forum } from "../../models/forum";
+
+interface User {
+    userId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+}
 
 const ForumPage = () => {
     const [forums, setForums] = useState<Forum[]>([]);
@@ -14,34 +21,69 @@ const ForumPage = () => {
     const [query, setQuery] = useState<string>("");
     const [after, setAfter] = useState<string>("");
     const [before, setBefore] = useState<string>("");
-    const [usersFirst, setUsersFirst] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(null);
+    const [showOnlyUserForums, setShowOnlyUserForums] = useState<boolean>(false);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
     const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
     const toast = useToast();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [forumToEdit, setForumToEdit] = useState<string | null>(null);
     const [forumToDelete, setForumToDelete] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/user', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data: User = await response.json();
+                    setUser(data);
+                } else {
+                    localStorage.removeItem('token');
+                    navigate('/login');
+                }
+            } catch (err) {
+                setError('Hiba történt az adatok lekérése során.');
+                localStorage.removeItem('token');
+                navigate('/login');
+            }
+        };
+
+        fetchUserData();
+    }, [navigate]);
+
     const fetchForums = async () => {
         try {
-            const params = new URLSearchParams();
-            if (query) params.append("query", query);
-            if (after) params.append("after", after);
-            if (before) params.append("before", before);
-            if (usersFirst) params.append("usersFirst", String(usersFirst));
-            if (orderBy) params.append("orderBy", orderBy);
+            const params = new URLSearchParams(location.search);
 
-            const response = await fetch(`http://localhost:5000/forum?${params.toString()}`);
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:5000/forum?${params.toString()}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
             const forumsJson = await response.json();
             setForums(forumsJson.map((forum: any) => ({
                 ...forum,
-                createdAt: new Date(forum.createdAt), // Biztosítjuk, hogy a createdAt mező Date objektummá legyen alakítva
+                createdAt: new Date(forum.createdAt),
                 lastComment: forum.lastComment ? {
                     ...forum.lastComment,
                     createdAt: new Date(forum.lastComment.createdAt)
@@ -54,7 +96,7 @@ const ForumPage = () => {
 
     useEffect(() => {
         fetchForums();
-    }, [orderBy, query, after, before, usersFirst]);
+    }, [location.search]);
 
     const handleForumCreated = () => {
         fetchForums();
@@ -83,6 +125,9 @@ const ForumPage = () => {
                 });
 
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error("Nincs jogosultságod a fórum törléséhez.");
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
@@ -97,54 +142,127 @@ const ForumPage = () => {
                 });
             } catch (err: any) {
                 setError(err.message);
+                toast({
+                    title: "Hiba",
+                    description: err.message,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
             }
         }
     };
 
-    const handleForumUpdated = () => {
-        fetchForums();
+    const handleForumUpdated = async () => {
+        try {
+            await fetchForums();
+        } catch (err: any) {
+            if (err.message.includes("403")) {
+                setError("Nincs jogosultságod a fórum módosításához.");
+                toast({
+                    title: "Hiba",
+                    description: "Nincs jogosultságod a fórum módosításához.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            } else {
+                setError(err.message);
+            }
+        }
     };
 
+    const updateQueryParams = (params: Record<string, any>) => {
+        const searchParams = new URLSearchParams(location.search);
+        Object.keys(params).forEach(key => {
+            if (params[key]) {
+                searchParams.set(key, params[key]);
+            } else {
+                searchParams.delete(key);
+            }
+        });
+        navigate({ search: searchParams.toString() }, { replace: true });
+    };
+
+    const handleToggleUserForums = () => {
+        setShowOnlyUserForums(!showOnlyUserForums);
+        updateQueryParams({ usersFirst: !showOnlyUserForums ? "true" : "" });
+    };
+
+    const filteredForums = showOnlyUserForums && user
+        ? forums.filter(forum => forum.createdBy.userId === user.userId)
+        : forums;
+
+    if (!user) {
+        return (
+            <Box width="full" backgroundColor="black" color="white" padding={5} display="flex" justifyContent="center" alignItems="center">
+                <Spinner size="xl" />
+            </Box>
+        );
+    }
+
     return (
-        <Box width="full" backgroundColor="gray.100" padding={5}>
-            {error && <p>Error: {error}</p>}
+        <Box width="full" backgroundColor="black" color="white" padding={5}>
+            {error && <Text color="red.500">Error: {error}</Text>}
             <Flex direction="column" marginBottom={4}>
                 <Input
                     placeholder="Keresés..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onBlur={() => updateQueryParams({ query })}
                     marginBottom={2}
+                    backgroundColor="gray.800"
+                    color="white"
+                    _placeholder={{ color: 'gray.500' }}
                 />
                 <Flex justifyContent="space-between" marginBottom={2}>
                     <Box width="48%">
-                        <FormLabel>Kezdő dátum</FormLabel>
+                        <FormLabel color="white">Kezdő dátum</FormLabel>
                         <Input
                             type="date"
                             value={after}
                             onChange={(e) => setAfter(e.target.value)}
+                            onBlur={() => updateQueryParams({ after })}
+                            backgroundColor="gray.800"
+                            color="white"
                         />
                     </Box>
                     <Box width="48%">
-                        <FormLabel>Vég dátum</FormLabel>
+                        <FormLabel color="white">Vég dátum</FormLabel>
                         <Input
                             type="date"
                             value={before}
                             onChange={(e) => setBefore(e.target.value)}
+                            onBlur={() => updateQueryParams({ before })}
+                            backgroundColor="gray.800"
+                            color="white"
                         />
                     </Box>
                 </Flex>
                 <Select
                     value={orderBy}
-                    onChange={(e) => setOrderBy(e.target.value)}
+                    onChange={(e) => {
+                        setOrderBy(e.target.value);
+                        updateQueryParams({ orderBy: e.target.value });
+                    }}
                     marginBottom={2}
+                    backgroundColor="black"
+                    color="white"
+                    _hover={{ backgroundColor: "gray.700" }}
+                    sx={{
+                        option: {
+                            backgroundColor: "black",
+                            color: "white"
+                        }
+                    }}
                 >
                     <option value="date.DESC">Legfrissebb legelöl</option>
                     <option value="date.ASC">Legrégebbi legelöl</option>
                     <option value="name.ASC">Név szerint A-Z</option>
                     <option value="name.DESC">Név szerint Z-A</option>
                 </Select>
-                <Button onClick={() => setUsersFirst(!usersFirst)} marginBottom={2}>
-                    {usersFirst ? "Minden fórum" : "Csak a saját fórumjaim"}
+                <Button onClick={handleToggleUserForums} colorScheme="blue" marginBottom={2}>
+                    {showOnlyUserForums ? "Összes fórum" : "Csak a saját fórumaim"}
                 </Button>
                 <Button onClick={onOpen} colorScheme="blue" marginBottom={2}>
                     Új fórum létrehozása
@@ -153,8 +271,8 @@ const ForumPage = () => {
                     Felhasználói adatok módosítása
                 </Button>
             </Flex>
-            {forums.length > 0 ? (
-                <ForumList forums={forums} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
+            {filteredForums.length > 0 ? (
+                <ForumList forums={filteredForums} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} currentUser={user.userId} />
             ) : (
                 <p>Loading...</p>
             )}

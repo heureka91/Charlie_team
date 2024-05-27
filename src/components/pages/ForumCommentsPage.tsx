@@ -109,11 +109,11 @@ const ForumCommentsPage: React.FC = () => {
     };
 
     if (!forumId) {
-        return <Text>Error: Forum ID is not defined.</Text>;
+        return <Text color="white">Error: Forum ID is not defined.</Text>;
     }
 
     return (
-        <Box width="full" padding={5}>
+        <Box width="full" padding={5} bg="black" color="white">
             {error && <Text color="red.500">Error: {error}</Text>}
             <Button onClick={() => navigate("/forum")} marginBottom={4}>
                 Vissza a fórumokhoz

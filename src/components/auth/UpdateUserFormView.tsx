@@ -16,28 +16,32 @@ interface UpdateUserFormViewProps {
 
 const UpdateUserFormView: React.FC<UpdateUserFormViewProps> = ({ formik, error, onCancel }) => {
     return (
-        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px">
+        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px" backgroundColor="#000000" color="#ffffff">
             <Heading as="h2" textAlign="center" mb={4}>Felhasználói adatok frissítése</Heading>
             <Form>
                 <FormControl isInvalid={!!(formik.touched.firstName && formik.errors.firstName)} marginBottom="15px">
-                    <FormLabel htmlFor="firstName">Keresztnév</FormLabel>
+                    <FormLabel htmlFor="firstName" color="#ffffff">Keresztnév</FormLabel>
                     <Field as={Input}
                            type="text"
                            id="firstName"
                            name="firstName"
                            placeholder="Keresztnév"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.lastName && formik.errors.lastName)} marginBottom="15px">
-                    <FormLabel htmlFor="lastName">Vezetéknév</FormLabel>
+                    <FormLabel htmlFor="lastName" color="#ffffff">Vezetéknév</FormLabel>
                     <Field as={Input}
                            type="text"
                            id="lastName"
                            name="lastName"
                            placeholder="Vezetéknév"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.lastName}</FormErrorMessage>
                 </FormControl>
@@ -54,5 +58,6 @@ const UpdateUserFormView: React.FC<UpdateUserFormViewProps> = ({ formik, error, 
         </Box>
     );
 };
+
 
 export default UpdateUserFormView;

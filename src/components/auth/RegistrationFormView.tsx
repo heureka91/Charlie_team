@@ -3,7 +3,6 @@ import React from 'react';
 import { FormikProps, Form, Field, ErrorMessage } from 'formik';
 import { Box, Button, ButtonGroup, FormControl, FormLabel, Input, FormErrorMessage, Heading, Text } from '@chakra-ui/react';
 
-
 interface FormValues {
     username: string;
     password: string;
@@ -20,61 +19,71 @@ interface RegistrationFormViewProps {
 
 const RegistrationFormView: React.FC<RegistrationFormViewProps> = ({ formik, error, onCancel }) => {
     return (
-        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px">
+        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px" backgroundColor="#000000" color="#ffffff">
             <Heading as="h2" textAlign="center">Regisztrációs űrlap</Heading>
             <Form>
                 <FormControl isInvalid={!!(formik.touched.username && formik.errors.username)} marginBottom="15px">
-                    <FormLabel htmlFor="username">Felhasználónév</FormLabel>
+                    <FormLabel htmlFor="username" color="#ffffff">Felhasználónév</FormLabel>
                     <Field as={Input}
                            type="email"
                            id="username"
                            name="username"
                            placeholder="Felhasználónév"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.username}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.password && formik.errors.password)} marginBottom="15px">
-                    <FormLabel htmlFor="password">Jelszó</FormLabel>
+                    <FormLabel htmlFor="password" color="#ffffff">Jelszó</FormLabel>
                     <Field as={Input}
                            type="password"
                            id="password"
                            name="password"
                            placeholder="Jelszó"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.passwordConfirm && formik.errors.passwordConfirm)} marginBottom="15px">
-                    <FormLabel htmlFor="passwordConfirm">Jelszó megerősítése</FormLabel>
+                    <FormLabel htmlFor="passwordConfirm" color="#ffffff">Jelszó megerősítése</FormLabel>
                     <Field as={Input}
                            type="password"
                            id="passwordConfirm"
                            name="passwordConfirm"
                            placeholder="Jelszó megerősítése"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.passwordConfirm}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.firstName && formik.errors.firstName)} marginBottom="15px">
-                    <FormLabel htmlFor="firstName">Keresztnév</FormLabel>
+                    <FormLabel htmlFor="firstName" color="#ffffff">Keresztnév</FormLabel>
                     <Field as={Input}
                            type="text"
                            id="firstName"
                            name="firstName"
                            placeholder="Keresztnév"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.lastName && formik.errors.lastName)} marginBottom="15px">
-                    <FormLabel htmlFor="lastName">Vezetéknév</FormLabel>
+                    <FormLabel htmlFor="lastName" color="#ffffff">Vezetéknév</FormLabel>
                     <Field as={Input}
                            type="text"
                            id="lastName"
                            name="lastName"
                            placeholder="Vezetéknév"
-                           backgroundColor="#e0e0e0"
+                           backgroundColor="#333333"
+                           color="#ffffff"
+                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.lastName}</FormErrorMessage>
                 </FormControl>
@@ -91,5 +100,6 @@ const RegistrationFormView: React.FC<RegistrationFormViewProps> = ({ formik, err
         </Box>
     );
 };
+
 
 export default RegistrationFormView;

@@ -2,15 +2,38 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import { Button, ButtonGroup } from '@chakra-ui/react';
+import { Button, ButtonGroup, Input, Box, FormControl, FormErrorMessage, Heading, useToast } from '@chakra-ui/react';
 
-// Komponens definiálása
+const styles: { [key: string]: React.CSSProperties } = {
+    container: {
+        maxWidth: '400px',
+        margin: 'auto',
+        padding: '20px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        backgroundColor: '#000000',
+        color: '#ffffff',
+    },
+    input: {
+        width: '100%',
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        color: '#ffffff',
+        backgroundColor: '#333333',
+    },
+    errorMessage: {
+        color: 'red',
+        textAlign: 'center' as 'center', // explicit cast
+        marginTop: '10px',
+    },
+};
+
 const ChangePasswordForm: React.FC = () => {
-    // Állapotkezelés a hibaüzenetekhez
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const toast = useToast();
 
-    // Validálási séma meghatározása Yup segítségével
     const validationSchema = Yup.object({
         oldPassword: Yup.string()
             .min(8, 'A jelszónak legalább 8 karakter hosszúnak kell lennie')
@@ -28,7 +51,6 @@ const ChangePasswordForm: React.FC = () => {
             .required('Kötelező mező'),
     });
 
-    // Formik inicializálása
     const formik = useFormik({
         initialValues: {
             oldPassword: '',
@@ -45,7 +67,6 @@ const ChangePasswordForm: React.FC = () => {
             }
 
             try {
-                // PATCH kérés küldése a szervernek
                 const response = await fetch('http://localhost:5000/user/login', {
                     method: 'PATCH',
                     headers: {
@@ -56,7 +77,12 @@ const ChangePasswordForm: React.FC = () => {
                 });
 
                 if (response.ok) {
-                    alert('Jelszó sikeresen megváltoztatva!');
+                    toast({
+                        title: 'Jelszó sikeresen megváltoztatva!',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                     navigate('/profile');
                 } else {
                     const errorData = await response.json();
@@ -86,61 +112,60 @@ const ChangePasswordForm: React.FC = () => {
         },
     });
 
-    // Komponens renderelése
     return (
-        <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
-            <h2 style={{ textAlign: 'center' }}>Jelszó Módosítása</h2>
+        <Box style={styles.container}>
+            <Heading as="h2" size="lg" textAlign="center">Jelszó Módosítása</Heading>
             <form onSubmit={formik.handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <input
+                <FormControl isInvalid={formik.touched.oldPassword && !!formik.errors.oldPassword} mb={4}>
+                    <Input
                         type="password"
                         name="oldPassword"
                         placeholder="Régi Jelszó"
                         value={formik.values.oldPassword}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', color: 'black', backgroundColor: '#e0e0e0' }}
+                        style={styles.input}
+                        _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
-                    {formik.touched.oldPassword && formik.errors.oldPassword && (
-                        <div style={{ color: 'red' }}>{formik.errors.oldPassword}</div>
-                    )}
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <input
+                    <FormErrorMessage>{formik.errors.oldPassword}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={formik.touched.password && !!formik.errors.password} mb={4}>
+                    <Input
                         type="password"
                         name="password"
                         placeholder="Új Jelszó"
                         value={formik.values.password}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', color: 'black', backgroundColor: '#e0e0e0' }}
+                        style={styles.input}
+                        _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
-                    {formik.touched.password && formik.errors.password && (
-                        <div style={{ color: 'red' }}>{formik.errors.password}</div>
-                    )}
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <input
+                    <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={formik.touched.passwordConfirm && !!formik.errors.passwordConfirm} mb={4}>
+                    <Input
                         type="password"
                         name="passwordConfirm"
                         placeholder="Új Jelszó Megerősítése"
                         value={formik.values.passwordConfirm}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', color: 'black', backgroundColor: '#e0e0e0' }}
+                        style={styles.input}
+                        _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
-                    {formik.touched.passwordConfirm && formik.errors.passwordConfirm && (
-                        <div style={{ color: 'red' }}>{formik.errors.passwordConfirm}</div>
-                    )}
-                </div>
-                {error && <p style={{ color: 'red', textAlign: 'center', marginTop: '10px' }}>{error}</p>}
+                    <FormErrorMessage>{formik.errors.passwordConfirm}</FormErrorMessage>
+                </FormControl>
+                {error && <p style={styles.errorMessage}>{error}</p>}
                 <ButtonGroup>
                     <Button type="submit" colorScheme="green" width="100%" isDisabled={!formik.isValid || formik.isSubmitting}>
                         Mentés
                     </Button>
+                    <Button type="button" colorScheme="red" width="100%" onClick={() => navigate('/profile')}>
+                        Mégse
+                    </Button>
                 </ButtonGroup>
             </form>
-        </div>
+        </Box>
     );
 };
 

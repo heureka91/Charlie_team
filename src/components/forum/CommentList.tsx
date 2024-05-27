@@ -12,10 +12,10 @@ const CommentList: FC<CommentListProps> = ({ comments, onEditClick, onDeleteClic
     return (
         <Box>
             {comments.map((comment) => (
-                <Box key={comment.id} padding={4} borderWidth={1} borderRadius="md" marginBottom={2} backgroundColor="white">
+                <Box key={comment.id} padding={4} borderWidth={1} borderRadius="md" marginBottom={2} backgroundColor="black" color="white">
                     <Flex justifyContent="space-between">
                         <Text fontSize="md">{comment.message}</Text>
-                        <Text fontSize="sm" color="gray.500">{new Date(comment.createdAt).toLocaleString()}</Text>
+                        <Text fontSize="sm" color="gray.400">{new Date(comment.createdAt).toLocaleString()}</Text>
                     </Flex>
                     <Text fontSize="sm" fontWeight="medium">Létrehozta: {comment.user.firstName} {comment.user.lastName}</Text>
                     <Flex justifyContent="flex-end" marginTop={2}>

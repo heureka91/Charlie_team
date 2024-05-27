@@ -16,11 +16,11 @@ interface LoginFormViewProps {
 
 const LoginFormView: React.FC<LoginFormViewProps> = ({ formik, error, loading }) => {
     return (
-        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px">
+        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px" backgroundColor="#000000" color="#ffffff">
             <Heading as="h2" textAlign="center" marginBottom="20px">Belépés</Heading>
             <form onSubmit={formik.handleSubmit}>
                 <FormControl isInvalid={!!(formik.touched.username && formik.errors.username)} marginBottom="15px">
-                    <FormLabel htmlFor="username">Felhasználónév</FormLabel>
+                    <FormLabel htmlFor="username" color="#ffffff">Felhasználónév</FormLabel>
                     <Input
                         type="email"
                         id="username"
@@ -29,12 +29,14 @@ const LoginFormView: React.FC<LoginFormViewProps> = ({ formik, error, loading })
                         value={formik.values.username}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        backgroundColor="#e0e0e0"
+                        backgroundColor="#333333"
+                        color="#ffffff"
+                        _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.username}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.password && formik.errors.password)} marginBottom="15px">
-                    <FormLabel htmlFor="password">Jelszó</FormLabel>
+                    <FormLabel htmlFor="password" color="#ffffff">Jelszó</FormLabel>
                     <Input
                         type="password"
                         id="password"
@@ -43,7 +45,9 @@ const LoginFormView: React.FC<LoginFormViewProps> = ({ formik, error, loading })
                         value={formik.values.password}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        backgroundColor="#e0e0e0"
+                        backgroundColor="#333333"
+                        color="#ffffff"
+                        _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
                     />
                     <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
                 </FormControl>
@@ -60,11 +64,12 @@ const LoginFormView: React.FC<LoginFormViewProps> = ({ formik, error, loading })
                     </Button>
                 </ButtonGroup>
                 <Text textAlign="center" marginTop="10px">
-                    Nincs fiókod? <a href="/register">Regisztráció</a>
+                    Nincs fiókod? <a href="/register" style={{ color: '#00BFFF' }}>Regisztráció</a>
                 </Text>
             </form>
         </Box>
     );
 };
+
 
 export default LoginFormView;

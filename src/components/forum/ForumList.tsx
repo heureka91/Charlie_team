@@ -7,9 +7,10 @@ interface ForumListProps {
     forums: Forum[];
     onEditClick: (forumId: string) => void;
     onDeleteClick: (forumId: string) => void;
+    currentUser: string;
 }
 
-const ForumList: FC<ForumListProps> = ({ forums, onEditClick, onDeleteClick }) => {
+const ForumList: FC<ForumListProps> = ({ forums, onEditClick, onDeleteClick, currentUser }) => {
     return (
         <Grid
             sx={{
@@ -18,8 +19,8 @@ const ForumList: FC<ForumListProps> = ({ forums, onEditClick, onDeleteClick }) =
                 padding: 5,
                 borderWidth: 2,
                 borderRadius: "md",
-                borderColor: "gray.300",
-                backgroundColor: "gray.50",
+                borderColor: "black.300",
+                backgroundColor: "black.50",
             }}
         >
             {forums.map((forumItem: Forum) => (
@@ -28,6 +29,7 @@ const ForumList: FC<ForumListProps> = ({ forums, onEditClick, onDeleteClick }) =
                         forum={forumItem}
                         onEditClick={onEditClick}
                         onDeleteClick={onDeleteClick}
+                        currentUser={currentUser}
                     />
                 </GridItem>
             ))}
