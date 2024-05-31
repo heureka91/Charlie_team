@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Text, Spinner, Heading, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Heading, Text, useToast, Spinner } from '@chakra-ui/react';
+import { getToken, clearToken } from '../../auth';
+import {User} from "../../models/User";
 
-interface User {
-    email: string;
-    firstName: string;
-    lastName: string;
-    userId: string;
-}
+
 
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
@@ -41,7 +38,7 @@ const Profile: React.FC = () => {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             if (!token) {
                 navigate('/login');
                 return;
@@ -51,7 +48,7 @@ const Profile: React.FC = () => {
                 const response = await fetch('http://localhost:5000/user', {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 });
 
@@ -59,12 +56,12 @@ const Profile: React.FC = () => {
                     const data: User = await response.json();
                     setUser(data);
                 } else {
-                    localStorage.removeItem('token');
+                    clearToken();
                     navigate('/login');
                 }
             } catch (err) {
                 setError('Hiba történt az adatok lekérése során.');
-                localStorage.removeItem('token');
+                clearToken();
                 navigate('/login');
             }
         };
@@ -73,20 +70,16 @@ const Profile: React.FC = () => {
     }, [navigate]);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        clearToken();
         navigate('/login');
     };
 
     const handleUpdateUser = () => {
-        navigate('/update');
+        navigate('/profile/edit');
     };
 
     const handleChangePassword = () => {
         navigate('/change-password');
-    };
-
-    const handleBackToForum = () => {
-        navigate('/forum');
     };
 
     if (error) {
@@ -120,7 +113,7 @@ const Profile: React.FC = () => {
             <Button colorScheme="red" style={styles.button} onClick={handleLogout}>
                 Kilépés
             </Button>
-            <Button colorScheme="blue" style={styles.button} onClick={handleBackToForum}>
+            <Button colorScheme="blue" style={styles.button} onClick={() => navigate('/forum')}>
                 Vissza a fórumra
             </Button>
         </Box>

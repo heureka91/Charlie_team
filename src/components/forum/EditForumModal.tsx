@@ -13,7 +13,6 @@ import {
     Input,
     Textarea,
     useToast,
-    Box,
     Text
 } from "@chakra-ui/react";
 

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { Flex, Text, Heading, LinkBox, LinkOverlay, Button, Box } from "@chakra-ui/react";
-import { Forum } from "../../models/forum"; // Helyes import
+import { Forum } from "../../models/Forum";
 
 interface ForumProps {
     forum: Forum;
@@ -12,6 +12,11 @@ interface ForumProps {
 
 const ForumListItem: FC<ForumProps> = ({ forum, onEditClick, onDeleteClick, currentUser }) => {
     const navigate = useNavigate();
+
+    const handleNavigation = () => {
+        navigate(`/forum/${forum.id}/comments`);
+        window.scrollTo(0, 0);
+    };
 
     return (
         <LinkBox
@@ -25,7 +30,7 @@ const ForumListItem: FC<ForumProps> = ({ forum, onEditClick, onDeleteClick, curr
             }}
         >
             <Flex justifyContent="space-between" opacity={0.85}>
-                <LinkOverlay as="button" onClick={() => navigate(`/forum/${forum.id}/comments`)}>
+                <LinkOverlay as="button" onClick={handleNavigation}>
                     <Heading as="header" flexGrow={1} gap={3} display="flex" flexDirection="column">
                         <Text as="h4" fontSize="lg" color="green.500">
                             {forum.title}

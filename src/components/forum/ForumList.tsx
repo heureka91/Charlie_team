@@ -1,7 +1,7 @@
 import React, { FC } from "react";
-import { Forum } from "../../models/forum"; // Ensure the correct import
+import { Forum } from "../../models/Forum";
 import { Grid, GridItem } from "@chakra-ui/react";
-import ForumListItem from "./ForumList-Item"; // Ensure the correct import
+import ForumListItem from "./ForumList-Item";
 
 interface ForumListProps {
     forums: Forum[];

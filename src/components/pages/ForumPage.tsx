@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Box, Select, Input, Button, Flex, FormLabel, useDisclosure, useToast, Text, Spinner } from "@chakra-ui/react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import ForumList from "../../components/forum/ForumList";
-import { CreateForumModal } from "../../components/forum/CreateForumModal";
-import EditForumModal from "../../components/forum/EditForumModal";
-import DeleteConfirmation from "../../components/forum/DeleteConfirmation";
-import { Forum } from "../../models/forum";
-
-interface User {
-    userId: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-}
-
+import ForumList from "../forum/ForumList";
+import { CreateForumModal } from "../forum/CreateForumModal";
+import EditForumModal from "../forum/EditForumModal";
+import DeleteConfirmation from "../forum/DeleteConfirmation";
+import { Forum } from "../../models/Forum";
+import { User } from "../../models/User";
 const ForumPage = () => {
     const [forums, setForums] = useState<Forum[]>([]);
     const [error, setError] = useState<string | null>(null);
