@@ -1,8 +1,9 @@
-import { user } from './user';
+import { User } from "./User";
 
 export interface Comment {
     id: string;
-    message: string;
+    content: string;
     createdAt: Date;
-    user: user;
+    user: User;
+    message: string;
 }
