@@ -1,47 +1,40 @@
-// src/UpdateUserFormView.tsx
 import React from 'react';
-import { FormikProps, Form, Field } from 'formik';
-import { Box, Button, ButtonGroup, FormControl, FormLabel, Input, FormErrorMessage, Heading, Text } from '@chakra-ui/react';
-
-interface FormValues {
-    firstName: string;
-    lastName: string;
-}
+import { Box, Button, FormControl, FormLabel, Input, Text, Heading, ButtonGroup, FormErrorMessage } from '@chakra-ui/react';
+import { Formik, Field, Form, FormikProps } from 'formik';
+import * as Yup from 'yup';
+import { useUpdateUserForm } from './UpdateUserForm';
+import { User } from '../../models/User';
 
 interface UpdateUserFormViewProps {
-    formik: FormikProps<FormValues>;
-    error: string | null;
+    formik: FormikProps<User>;
+    error?: string;
     onCancel: () => void;
 }
 
 const UpdateUserFormView: React.FC<UpdateUserFormViewProps> = ({ formik, error, onCancel }) => {
     return (
-        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px" backgroundColor="#000000" color="#ffffff">
+        <Box maxWidth="400px" margin="auto" padding="20px" border="1px solid #ccc" borderRadius="5px">
             <Heading as="h2" textAlign="center" mb={4}>Felhasználói adatok frissítése</Heading>
             <Form>
                 <FormControl isInvalid={!!(formik.touched.firstName && formik.errors.firstName)} marginBottom="15px">
-                    <FormLabel htmlFor="firstName" color="#ffffff">Keresztnév</FormLabel>
+                    <FormLabel htmlFor="firstName">Keresztnév</FormLabel>
                     <Field as={Input}
                            type="text"
                            id="firstName"
                            name="firstName"
                            placeholder="Keresztnév"
-                           backgroundColor="#333333"
-                           color="#ffffff"
-                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
+                           backgroundColor="#e0e0e0"
                     />
                     <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!(formik.touched.lastName && formik.errors.lastName)} marginBottom="15px">
-                    <FormLabel htmlFor="lastName" color="#ffffff">Vezetéknév</FormLabel>
+                    <FormLabel htmlFor="lastName">Vezetéknév</FormLabel>
                     <Field as={Input}
                            type="text"
                            id="lastName"
                            name="lastName"
                            placeholder="Vezetéknév"
-                           backgroundColor="#333333"
-                           color="#ffffff"
-                           _placeholder={{ color: '#FFD700' }} // sárga placeholder szín
+                           backgroundColor="#e0e0e0"
                     />
                     <FormErrorMessage>{formik.errors.lastName}</FormErrorMessage>
                 </FormControl>
@@ -59,5 +52,33 @@ const UpdateUserFormView: React.FC<UpdateUserFormViewProps> = ({ formik, error, 
     );
 };
 
+const UpdateUserFormContainer: React.FC = () => {
+    const { userData, handleSubmit } = useUpdateUserForm();
 
-export default UpdateUserFormView;
+    if (!userData) {
+        return null;
+    }
+
+    return (
+        <Formik
+            initialValues={userData}
+            validationSchema={Yup.object({
+                firstName: Yup.string().required('Keresztnév szükséges'),
+                lastName: Yup.string().required('Vezetéknév szükséges'),
+            })}
+            onSubmit={(values, { setSubmitting }) => {
+                handleSubmit(values);
+                setSubmitting(false);
+            }}
+        >
+            {formik => (
+                <UpdateUserFormView
+                    formik={formik}
+                    onCancel={() => window.history.back()}
+                />
+            )}
+        </Formik>
+    );
+};
+
+export default UpdateUserFormContainer;

@@ -1,12 +1,7 @@
-// src/LoginFormView.tsx
 import React from 'react';
 import { FormikProps } from 'formik';
 import { Box, Button, ButtonGroup, FormControl, FormLabel, Input, FormErrorMessage, Heading, Text } from '@chakra-ui/react';
-
-interface FormValues {
-    username: string;
-    password: string;
-}
+import { FormValues } from '../../models/LoginFormValues';
 
 interface LoginFormViewProps {
     formik: FormikProps<FormValues>;
@@ -70,6 +65,5 @@ const LoginFormView: React.FC<LoginFormViewProps> = ({ formik, error, loading })
         </Box>
     );
 };
-
 
 export default LoginFormView;
