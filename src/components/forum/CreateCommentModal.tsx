@@ -12,7 +12,6 @@ import {
     FormLabel,
     Textarea,
     useToast,
-    Box,
     Text
 } from "@chakra-ui/react";
 
@@ -51,21 +50,36 @@ const CreateCommentModal: React.FC<CreateCommentModalProps> = ({ isOpen, onClose
                 body: JSON.stringify({ message })
             });
 
+            if (response.status === 201) {
+                toast({
+                    title: "Hozzászólás létrehozva",
+                    description: `A hozzászólás sikeresen létre lett hozva.`,
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true
+                });
+
+                onClose();
+                onCommentCreated();
+                return;
+            }
+
+            if (response.status === 400) {
+                throw new Error("Bad request: A bevitt adatok érvénytelenek.");
+            }
+
+            if (response.status === 401) {
+                throw new Error("Unauthorized: Ismeretlen felhasználó, hiányzó vagy érvénytelen token.");
+            }
+
+            if (response.status === 404) {
+                throw new Error("Not Found: A megadott fórum nem található.");
+            }
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            toast({
-                title: "Hozzászólás létrehozva",
-                description: "A hozzászólás sikeresen létre lett hozva.",
-                status: "success",
-                duration: 5000,
-                isClosable: true
-            });
-
-            onClose();
-            onCommentCreated();
         } catch (err: any) {
             setError(err.message);
         }
