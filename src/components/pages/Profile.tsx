@@ -2,33 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Text, Spinner, Heading, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, clearToken } from '../../auth';
-import {User} from "../../models/User";
-
-
-
-const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-        maxWidth: '400px',
-        margin: 'auto',
-        padding: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-        backgroundColor: '#000000',
-        color: '#ffffff',
-    },
-    text: {
-        color: '#ffffff',
-    },
-    button: {
-        width: '100%',
-        marginTop: '10px',
-    },
-    errorMessage: {
-        color: 'red',
-        textAlign: 'center' as 'center',
-        marginTop: '10px',
-    },
-};
+import { User } from "../../models/User";
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -84,36 +58,36 @@ const Profile: React.FC = () => {
 
     if (error) {
         return (
-            <Box style={styles.container}>
-                <Text style={styles.errorMessage}>{error}</Text>
+            <Box maxW="400px" m="auto" p="20px" border="1px solid #ccc" borderRadius="5px" bg="black" color="white">
+                <Text color="red" textAlign="center" mt="10px">{error}</Text>
             </Box>
         );
     }
 
     if (!user) {
         return (
-            <Box style={styles.container}>
+            <Box maxW="400px" m="auto" p="20px" border="1px solid #ccc" borderRadius="5px" bg="black" color="white">
                 <Spinner size="xl" />
             </Box>
         );
     }
 
     return (
-        <Box style={styles.container}>
+        <Box maxW="400px" m="auto" p="20px" border="1px solid #ccc" borderRadius="5px" bg="black" color="white">
             <Heading as="h2" textAlign="center" mb={4}>Profil Oldal</Heading>
-            <Text style={styles.text}><strong>Email:</strong> {user.email}</Text>
-            <Text style={styles.text}><strong>Keresztnév:</strong> {user.firstName}</Text>
-            <Text style={styles.text}><strong>Vezetéknév:</strong> {user.lastName}</Text>
-            <Button colorScheme="teal" style={styles.button} onClick={handleUpdateUser}>
+            <Text><strong>Email:</strong> {user.email}</Text>
+            <Text><strong>Keresztnév:</strong> {user.firstName}</Text>
+            <Text><strong>Vezetéknév:</strong> {user.lastName}</Text>
+            <Button colorScheme="teal" width="100%" mt="10px" onClick={handleUpdateUser}>
                 Személyes adatok módosítása
             </Button>
-            <Button colorScheme="teal" style={styles.button} onClick={handleChangePassword}>
+            <Button colorScheme="teal" width="100%" mt="10px" onClick={handleChangePassword}>
                 Jelszó módosítása
             </Button>
-            <Button colorScheme="red" style={styles.button} onClick={handleLogout}>
+            <Button colorScheme="red" width="100%" mt="10px" onClick={handleLogout}>
                 Kilépés
             </Button>
-            <Button colorScheme="blue" style={styles.button} onClick={() => navigate('/forum')}>
+            <Button colorScheme="blue" width="100%" mt="10px" onClick={() => navigate('/forum')}>
                 Vissza a fórumra
             </Button>
         </Box>
