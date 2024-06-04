@@ -26,7 +26,6 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
     onConfirm,
     forumId,
     commentId,
-    fetchComments,
 }) => {
     const [error, setError] = useState<string | null>(null);
     const toast = useToast();
@@ -47,7 +46,6 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
             });
 
             if (response.status === 204) {
-                fetchComments();
                 onConfirm();
                 toast({
                     title: "Hozzászólás törölve",
@@ -56,6 +54,7 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
                     duration: 5000,
                     isClosable: true
                 });
+                onClose();
                 return;
             }
 
@@ -93,7 +92,7 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
                     <Button colorScheme="red" onClick={handleConfirm}>
                         Törlés
                     </Button>
-                    <Button variant="ghost" onClick={onClose}>
+                    <Button bg="#D5D8DC" color="black" marginLeft={4} variant="ghost" onClick={onClose}>
                         Mégse
                     </Button>
                 </ModalFooter>
