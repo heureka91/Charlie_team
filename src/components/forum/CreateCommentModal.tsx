@@ -106,7 +106,7 @@ const CreateCommentModal: React.FC<CreateCommentModalProps> = ({ isOpen, onClose
                     <Button colorScheme="blue" onClick={handleSubmit}>
                         Létrehozás
                     </Button>
-                    <Button variant="ghost" onClick={onClose}>
+                    <Button bg="#D5D8DC" color="black" marginLeft={4} variant="ghost" onClick={onClose}>
                         Mégse
                     </Button>
                 </ModalFooter>
