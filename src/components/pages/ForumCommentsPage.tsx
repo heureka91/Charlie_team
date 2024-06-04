@@ -48,10 +48,6 @@ const ForumCommentsPage: React.FC = () => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
-    
-            const data = await response.json();
-            setComments(data.comments);
-            setTotal(data.total);
 
             if (response.status === 200) {
                 toast({
@@ -62,6 +58,11 @@ const ForumCommentsPage: React.FC = () => {
                     isClosable: true
                 });
             }
+    
+            const data = await response.json();
+            setComments(data.comments);
+            setTotal(data.total);
+
         } catch (err: any) {
             setError(err.message);
         }
@@ -148,10 +149,7 @@ const ForumCommentsPage: React.FC = () => {
             <DeleteCommentConfirmation
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={() => {
-                    setIsDeleteModalOpen(false);
-                    fetchComments();
-                }}
+                onConfirm={fetchComments}
                 forumId={forumId}
                 commentId={commentToDelete}
                 fetchComments={fetchComments}
