@@ -58,9 +58,16 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
                 return;
             }
 
-            if (response.status === 401 || response.status === 403 || response.status === 404) {
-                const data = await response.json();
-                throw new Error(data.message || "Ismeretlen hiba történt.");
+            if (response.status === 401) {
+                throw new Error("Unauthorized: Ismeretlen felhasználó, hiányzó vagy érvénytelen token.");
+            }
+
+            if (response.status === 403) {
+                throw new Error("Forbidden: Hozzáférés megtagadva, a felhasználó nem a tulajdonosa a fórumnak vagy hozzászólásnak.");
+            }
+
+            if (response.status === 404) {
+                throw new Error("Not found: A fórum vagy hozzászólás nem található.");
             }
 
             if (!response.ok) {
