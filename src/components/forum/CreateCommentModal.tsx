@@ -73,7 +73,7 @@ const CreateCommentModal: React.FC<CreateCommentModalProps> = ({ isOpen, onClose
             }
 
             if (response.status === 404) {
-                throw new Error("Not Found: A megadott fórum nem található.");
+                throw new Error("Conflict: A megadott fórum nem található.");
             }
 
             if (!response.ok) {
@@ -82,6 +82,13 @@ const CreateCommentModal: React.FC<CreateCommentModalProps> = ({ isOpen, onClose
 
         } catch (err: any) {
             setError(err.message);
+            toast({
+                title: "Hiba történt",
+                description: err.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true
+            });
         }
     };
 
