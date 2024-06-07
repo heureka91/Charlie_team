@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Modal,
     ModalOverlay,
@@ -14,10 +14,11 @@ import {
 interface DeleteCommentConfirmationProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: () => void;
+    onConfirm: (commentId: string) => void;
     forumId: string;
     commentId: string | null;
-    fetchComments: () => void;
+    currentUser: { id: string; isForumOwner: boolean };
+    commentOwnerId: string;
 }
 
 const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
@@ -26,9 +27,19 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
     onConfirm,
     forumId,
     commentId,
+    currentUser,
+    commentOwnerId,
 }) => {
     const [error, setError] = useState<string | null>(null);
     const toast = useToast();
+
+    useEffect(() => {
+        if (!currentUser.isForumOwner && currentUser.id !== commentOwnerId) {
+            setError("Nincs jogosultságod a hozzászólás törlésére.");
+        } else {
+            setError(null);
+        }
+    }, [currentUser, commentOwnerId]);
 
     const handleConfirm = async () => {
         setError(null);
@@ -46,7 +57,7 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
             });
 
             if (response.status === 204) {
-                onConfirm();
+                onConfirm(commentId);
                 toast({
                     title: "Hozzászólás törölve",
                     description: "A hozzászólás sikeresen törölve lett.",
@@ -92,11 +103,11 @@ const DeleteCommentConfirmation: React.FC<DeleteCommentConfirmationProps> = ({
                 <ModalHeader>Hozzászólás törlése</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    Biztosan törölni szeretné ezt a hozzászólást?
                     {error && <p style={{ color: 'red' }}>{error}</p>}
+                    Biztosan törölni szeretné ezt a hozzászólást?
                 </ModalBody>
                 <ModalFooter>
-                    <Button colorScheme="red" onClick={handleConfirm}>
+                    <Button colorScheme="red" onClick={handleConfirm} isDisabled={!!error}>
                         Törlés
                     </Button>
                     <Button bg="#D5D8DC" color="black" marginLeft={4} variant="ghost" onClick={onClose}>
