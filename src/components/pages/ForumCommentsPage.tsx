@@ -4,7 +4,6 @@ import { Box, Flex, Button, Select, Text, useToast } from "@chakra-ui/react";
 import { Comment } from "../../models/comment";
 import CommentList from "../forum/CommentList";
 import CreateCommentModal from "../forum/CreateCommentModal";
-import EditCommentModal from "../forum/EditCommentModal";
 import DeleteCommentConfirmation from "../forum/DeleteCommentConfirmation";
 
 const ForumCommentsPage: React.FC = () => {
@@ -19,12 +18,10 @@ const ForumCommentsPage: React.FC = () => {
     const [offset, setOffset] = useState<number>(parseInt(searchParams.get('offset') || '0'));
     const [orderBy, setOrderBy] = useState<string>(searchParams.get('orderBy') || 'DESC');
     const [total, setTotal] = useState<number>(0);
-
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [commentToEdit, setCommentToEdit] = useState<string | null>(null);
     const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+
+    const token = localStorage.getItem("token");
 
     const fetchComments = async () => {
         if (!forumId) return;
@@ -97,14 +94,8 @@ const ForumCommentsPage: React.FC = () => {
         setIsCreateModalOpen(true);
     };
 
-    const handleEditComment = (commentId: string) => {
-        setCommentToEdit(commentId);
-        setIsEditModalOpen(true);
-    };
-
     const handleDeleteComment = (commentId: string) => {
         setCommentToDelete(commentId);
-        setIsDeleteModalOpen(true);
     };
 
     if (!forumId) {
@@ -130,10 +121,10 @@ const ForumCommentsPage: React.FC = () => {
                     <option value="DESC">Legújabb legelől</option>
                 </Select>
             </Flex>
-            <Button colorScheme="blue" onClick={handleCreateComment} marginBottom={4}>
+            <Button colorScheme="blue" onClick={handleCreateComment} marginBottom={4} isDisabled={!token}>
                 Új hozzászólás
             </Button>
-            <CommentList comments={comments} onEditClick={handleEditComment} onDeleteClick={handleDeleteComment} />
+            <CommentList comments={comments} onEditClick={handleCreateComment} onDeleteClick={handleDeleteComment} />
             <Flex justifyContent="space-between" marginTop={4}>
                 <Button onClick={() => handlePageChange(Math.max(offset - limit, 0))} isDisabled={offset === 0}>
                     Előző oldal
@@ -142,18 +133,17 @@ const ForumCommentsPage: React.FC = () => {
                     Következő oldal
                 </Button>
             </Flex>
-            <CreateCommentModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} forumId={forumId} onCommentCreated={fetchComments} />
-            {commentToEdit && (
-                <EditCommentModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} forumId={forumId} commentId={commentToEdit} onCommentUpdated={fetchComments} />
-            )}
+            <CreateCommentModal isOpen={
+            isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} forumId={forumId} onCommentCreated={fetchComments} />
             <DeleteCommentConfirmation
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
+                isOpen={!!commentToDelete}
+                onClose={() => setCommentToDelete(null)}
                 onConfirm={fetchComments}
                 forumId={forumId}
-                commentId={commentToDelete}
-                fetchComments={fetchComments}
-            />
+                commentId={commentToDelete} currentUser={{
+                    id: "",
+                    isForumOwner: false
+                }} commentOwnerId={""}/>
         </Box>
     );
 };
